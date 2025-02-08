@@ -34,14 +34,11 @@ paused = False
 output_directory = os.getcwd()
 audio_file_path = ""
 text = None
-running = False
 
 
 # Function to transcribe audio
 def transcribe_audio(file_path):
-    global running, record_button
-    running = True
-    
+    global record_button
     try:
         result = model.transcribe(file_path)
         transcription = result["text"]
@@ -59,12 +56,11 @@ def transcribe_audio(file_path):
         text = transcription
         #record_button.grid(row=1, column=0, pady=20,) #  sticky="ew") 
         record_button.configure(text="🎤 Record Audio", fg_color="lightblue")
-        running = False
     except Exception as e:
         if mload:
             messagebox.showerror("Error", f"An error occurred while transcribing: {e}\nBut yor can find the recorded audio at:{output_directory}")
         else:
-            messagebox.showerror("Error", f"Recording saved! But there is an error:\nModel not found, please select a model first.\nYou can find the recorded audio at:{output_directory}")
+            messagebox.showinfo("Info", f"Recording saved!\nYou can find the recorded audio at:{output_directory}\nYou may use the audio file to transcribe using 'Choose Audio File' Button.")
             
         record_button.configure(text="🎤 Record Audio", fg_color="lightblue")
 # Function to select an audio file and transcribe it
@@ -79,6 +75,10 @@ def select_audio_file():
         choose_file_button.configure(text = "📂 Choose Audio File")
 
 mload = False
+
+def ask_user():
+    response = messagebox.askyesno("Confirmation", "No model selected. Do you want to record anyway?")
+    return response
 
 def load_model(model_path):
     global mload, model
@@ -98,20 +98,25 @@ def select_model():
 
 # Function to start recording audio
 def start_recording():
-    global recording, paused, audio_file_path, audio_buffer, button_frame, transcription_box
-    recording = True
-    paused = False
-    audio_buffer = []  # Clear buffer
-    #record_button.configure(text="Stop Recording", command=stop_recording, fg_color="red")
-    transcription_box.delete("1.0", "end")
-    record_button.grid_forget()
-    button_frame.grid(row=record_button_no, column=0, pady=21 ) #  sticky="ew") 
-    sd.sleep(200)
-    pause_button.configure(state="normal")  # Enable Pause/Resume button
+    global mload
+    if mload==False:
+        rec = ask_user()
 
-    # Generate a unique file name for the recording
-    file_name = datetime.now().strftime("recording_%Y%m%d_%H%M%S.wav")
-    audio_file_path = os.path.join(output_directory, file_name)
+    if rec:
+        global recording, paused, audio_file_path, audio_buffer, button_frame, transcription_box
+        recording = True
+        paused = False
+        audio_buffer = []  # Clear buffer
+        #record_button.configure(text="Stop Recording", command=stop_recording, fg_color="red")
+        transcription_box.delete("1.0", "end")
+        record_button.grid_forget()
+        button_frame.grid(row=record_button_no, column=0, pady=21 ) #  sticky="ew") 
+        sd.sleep(200)
+        pause_button.configure(state="normal")  # Enable Pause/Resume button
+
+        # Generate a unique file name for the recording
+        file_name = datetime.now().strftime("recording_%Y%m%d_%H%M%S.wav")
+        audio_file_path = os.path.join(output_directory, file_name)
 
     def _record():
         global recording, paused, audio_buffer
@@ -149,11 +154,11 @@ def start_recording():
             record_button.grid(row=record_button_no, column=0, pady=10,)
             if mload:
                 record_button.configure(text="Transcribing...", command=start_recording)
-                print("yes")
             else: 
                 record_button.configure(state = "normal")
-                 #  sticky="ew")    
-    threading.Thread(target=_record, daemon=True).start()
+                 #  sticky="ew")   
+    if rec: 
+        threading.Thread(target=_record, daemon=True).start()
 
 # Function to stop recording
 def stop_recording():
