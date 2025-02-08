@@ -82,12 +82,14 @@ def ask_user():
 
 def load_model(model_path):
     global mload, model
-    model = whisper.load_model(model_path)
-    #mload = True
-    messagebox.showinfo("Title", "Model is loaded successfully")
+    try:
+        model = whisper.load_model(model_path)
+        #mload = True
+        messagebox.showinfo("Title", "Model is loaded successfully")
+        mload= True
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred while loading: {e}")
     select_model_button.configure(text ="✔️Change Model", command = select_model)
-    mload= True
-
 def select_model():
     global model_path, select_model_button
     model_path = filedialog.askopenfilename(filetypes=[("Model Files", "*.pt")])
