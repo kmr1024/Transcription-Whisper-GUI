@@ -36,11 +36,12 @@ audio_file_path = ""
 text = None
 running = False
 
+
 # Function to transcribe audio
 def transcribe_audio(file_path):
     global running, record_button
     running = True
-
+    
     try:
         result = model.transcribe(file_path)
         transcription = result["text"]
@@ -60,14 +61,22 @@ def transcribe_audio(file_path):
         record_button.configure(text="🎤 Record Audio", fg_color="lightblue")
         running = False
     except Exception as e:
-        messagebox.showerror("Error", f"An error occurred while transcribing: {e}\n But yor can find the recorded audio at:{output_directory}")
+        if mload:
+            messagebox.showerror("Error", f"An error occurred while transcribing: {e}\nBut yor can find the recorded audio at:{output_directory}")
+        else:
+            messagebox.showerror("Error", f"Recording saved! But there is an error:\nModel not found, please select a model first.\nYou can find the recorded audio at:{output_directory}")
+            
+        record_button.configure(text="🎤 Record Audio", fg_color="lightblue")
 # Function to select an audio file and transcribe it
+tcry = False
 def select_audio_file():
-    global transcription_box
+    global transcription_box, tcry
     transcription_box.delete("1.0", "end")
-    file_path = filedialog.askopenfilename(filetypes=[("Model File", "*.pt")])
+    file_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.aac *.mp3 *.wav *.m4a *.flac")])
     if file_path:
+        choose_file_button.configure(text = "Transcribing...")
         transcribe_audio(file_path)
+        choose_file_button.configure(text = "📂 Choose Audio File")
 
 mload = False
 
@@ -77,6 +86,8 @@ def load_model(model_path):
     #mload = True
     messagebox.showinfo("Title", "Model is loaded successfully")
     select_model_button.configure(text ="✔️Change Model", command = select_model)
+    mload= True
+
 def select_model():
     global model_path, select_model_button
     model_path = filedialog.askopenfilename(filetypes=[("Model Files", "*.pt")])
@@ -92,14 +103,9 @@ def start_recording():
     paused = False
     audio_buffer = []  # Clear buffer
     #record_button.configure(text="Stop Recording", command=stop_recording, fg_color="red")
-    
     transcription_box.delete("1.0", "end")
-
-
-    record_button.pack_forget()
-
-
-    button_frame.grid(row=record_button_no, column=0, pady=5 ) #  sticky="ew") 
+    record_button.grid_forget()
+    button_frame.grid(row=record_button_no, column=0, pady=21 ) #  sticky="ew") 
     sd.sleep(200)
     pause_button.configure(state="normal")  # Enable Pause/Resume button
 
@@ -140,10 +146,13 @@ def start_recording():
             messagebox.showerror("Error", f"An error occurred while recording: {e}")
         finally:
             button_frame.grid_forget()
-            record_button.configure(text="Transcribing...", command=start_recording)
-            record_button.grid(row=record_button_no, column=0, pady=5,) #  sticky="ew")
-            
-
+            record_button.grid(row=record_button_no, column=0, pady=10,)
+            if mload:
+                record_button.configure(text="Transcribing...", command=start_recording)
+                print("yes")
+            else: 
+                record_button.configure(state = "normal")
+                 #  sticky="ew")    
     threading.Thread(target=_record, daemon=True).start()
 
 # Function to stop recording
@@ -208,7 +217,7 @@ ctk.set_default_color_theme("green")  # Themes: "blue" (default), "green", "dark
 
 root = ctk.CTk()
 root.title("Wisper Transcriber")
-root.geometry("600x550")
+root.geometry("600x520")
 root.grid_columnconfigure(0, weight=1)
 
 # Heading
@@ -220,16 +229,16 @@ save_directory_label = ctk.CTkLabel(root, text=f"Save Directory: {output_directo
 save_directory_label.grid(row=save_directory_label_no, column=0, pady=5,) #  sticky="ew")
 
 # Change save directory button
-change_directory_button = ctk.CTkButton(root, text="Change Save Directory", text_color="Black", command=change_save_directory, fg_color="orange")
+change_directory_button = ctk.CTkButton(root, text="Change Save Directory", text_color="Black", command=change_save_directory, fg_color="orange", corner_radius=50)
 change_directory_button.grid(row=change_directory_button_no, column=0, pady=5,) #  sticky="ew") 
 
 
-select_model_button = ctk.CTkButton(root, text="Select Model", text_color="white",command=select_model, fg_color="purple")
+select_model_button = ctk.CTkButton(root, text="Select Model", text_color="white",command=select_model, fg_color="purple", corner_radius=50)
 select_model_button.grid(row=select_model_no, column=0, pady=5,) #  sticky="ew") 
 
 # Record button
-record_button = ctk.CTkButton(root, text="🎤 Record Audio", command=start_recording, text_color="Black", fg_color="lightblue")
-record_button.grid(row=record_button_no, column=0, pady=20,) #  sticky="ew") 
+record_button = ctk.CTkButton(root, text="🎤 Record Audio", command=start_recording, text_color="Black", fg_color="lightblue", corner_radius=50, width=150, height=50)
+record_button.grid(row=record_button_no, column=0, pady=10,) #  sticky="ew") 
 
 #button1.grid(row=0, column=0, padx=10, pady=20)
 
@@ -239,24 +248,24 @@ record_button.grid(row=record_button_no, column=0, pady=20,) #  sticky="ew")
 button_frame = ctk.CTkFrame(root, fg_color="transparent")
 #button_frame.grid(pady=20, padx=20)
 
-pause_button = ctk.CTkButton(button_frame, text="Pause", command= pause_recording, text_color="Black", fg_color="yellow")
+pause_button = ctk.CTkButton(button_frame, text="Pause", command= pause_recording, text_color="Black", fg_color="yellow", corner_radius=50)
 pause_button.grid(row=0, column=0, padx=10, pady=0)
 
-stop_button = ctk.CTkButton(button_frame, text="Stop", command=stop_recording, text_color="White", fg_color="#be2200")
+stop_button = ctk.CTkButton(button_frame, text="Stop", command=stop_recording, text_color="White", fg_color="#be2200", corner_radius=50)
 stop_button.grid(row=0, column=1, padx=10, pady=0)
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 # Choose file button
-choose_file_button = ctk.CTkButton(root, text="📂 Choose Audio File", text_color="Black",command=select_audio_file, fg_color="lightgreen")
-choose_file_button.grid(row=choose_file_button_no, column=0, pady=5,) #  sticky="ew") 
+choose_file_button = ctk.CTkButton(root, text="📂 Choose Audio File", text_color="Black",command=select_audio_file, fg_color="lightgreen", corner_radius=50)
+choose_file_button.grid(row=choose_file_button_no, column=0, pady=5,) #  sticky="ew", corner_radius=50) 
 
 # Transcription box
 transcription_box = ctk.CTkTextbox(root, wrap="word", height=150, width=500)
-transcription_box.grid(row=transcription_box_no, column=0, pady=5,) #  sticky="ew") 
+transcription_box.grid(row=transcription_box_no, column=0, pady=5) #  sticky="ew", corner_radius=50) 
 
 # Copy text button
-copy_button = ctk.CTkButton(root, text="Copy text to clipboard",text_color="White", command=copy_text, fg_color="#8d3560")
+copy_button = ctk.CTkButton(root, text="Copy text to clipboard",text_color="White", command=copy_text, fg_color="#8d3560", corner_radius=50)
 copy_button.grid(row=copy_button_no, column=0, pady=5,) #  sticky="ew") 
 
 # Footer
