@@ -1,18 +1,15 @@
-# Transcription-Whisper-GUI
-A simple transcription GUI with Python and Customtkinter module
-1) Functionality:
-   Choice for selecting the AI-models for transcription
-   Record audio and provide transcribed text
-   features:
-       Record/Pause Functionality
-       Recordings are saved as files for future transcription
-   Transcribe From an audio file
-
-   All transcribed text will be saves as text
-
 # **Whisper App – GUI Version**  
 
-Whisper App is a simple GUI-based tool for recording and transcribing audio using OpenAI's Whisper model. Follow the steps below to install and run the application.  
+A simple transcription GUI built with **Python** and **CustomTkinter**, integrating OpenAI’s Whisper model for high-quality speech-to-text conversion.  
+
+## **Features**  
+
+✔ **AI Model Selection** – Choose from different Whisper models for transcription.  
+✔ **Record & Transcribe** – Record audio and get real-time transcription.  
+✔ **Pause & Resume** – Pause and resume recordings seamlessly.  
+✔ **Save Recordings** – Audio files are saved for future transcription.  
+✔ **Transcribe Existing Audio** – Upload and transcribe pre-recorded audio files.  
+✔ **Auto-Save Transcriptions** – All transcribed text is saved for later use.  
 
 ## **Installation and Setup**  
 
@@ -34,7 +31,7 @@ model = whisper.load_model("medium")
 
 By default, this will download the model file **`medium.pt`** to:  
 📂 `C:/Users/<your_name>/.cache/whisper/`  
-_(Note: This folder may be hidden. You can enable "Show Hidden Files" in Windows Explorer to view it.)_  
+_(Note: This folder may be hidden. Enable "Show Hidden Files" in Windows Explorer to access it.)_  
 
 ### **Step 3: Run the Application**  
 Execute the GUI application by running:  
@@ -43,9 +40,11 @@ python whisper_app.py
 ```
 
 ### **Step 4: Transcribe Audio**  
-- Select a model file from the folder found in **Step 2** (`.cache/whisper/` directory).  
-- Use the **Record Audio** button to capture audio. The recorded file will be saved in the chosen directory.  
-- Alternatively, you can **select an existing audio file** to transcribe.  
+- Select a Whisper model from the **Step 2** folder (`.cache/whisper/`).  
+- Use the **Record Audio** button to start recording.  
+- **Pause/Resume** functionality allows flexible recording control.  
+- Audio recordings are saved for future transcription.  
+- Select an **existing audio file** to transcribe.  
+- All transcribed text is **automatically saved** for later use.  
 
 ✅ **That's it! Your transcription will be displayed in the app.**  
-
