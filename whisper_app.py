@@ -99,6 +99,7 @@ def select_model():
 # Function to start recording audio
 def start_recording():
     global mload
+    rec = False
     if mload==False:
         rec = ask_user()
 
