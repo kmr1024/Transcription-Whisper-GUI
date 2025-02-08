@@ -212,20 +212,23 @@ def restore_copy_button():
     copy_button.configure(text="Copy text to clipboard", fg_color="#8d3560")
 
 # CustomTkinter GUI
-ctk.set_appearance_mode("light")  # Modes: "System" (default), "Dark", "Light"
-ctk.set_default_color_theme("green")  # Themes: "blue" (default), "green", "dark-blue"
+ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
+ctk.set_default_color_theme("dark-blue")  # Themes: "blue" (default), "green", "dark-blue"
 
 root = ctk.CTk()
 root.title("Wisper Transcriber")
 root.geometry("600x520")
 root.grid_columnconfigure(0, weight=1)
 
+root.configure(fg_color="#4e1832")
+
+
 # Heading
 heading_label = ctk.CTkLabel(root, text="Audio Transcriber", font=ctk.CTkFont(size=18, weight="bold"))
 heading_label.grid(row=title_no, column=0, pady=20,) #  sticky="ew")
 
 # Save directory display
-save_directory_label = ctk.CTkLabel(root, text=f"Save Directory: {output_directory}", text_color="Black", font=ctk.CTkFont(size=12, slant="italic"))
+save_directory_label = ctk.CTkLabel(root, text=f"Save Directory: {output_directory}", text_color="White", font=ctk.CTkFont(size=12, slant="italic"))
 save_directory_label.grid(row=save_directory_label_no, column=0, pady=5,) #  sticky="ew")
 
 # Change save directory button
