@@ -102,7 +102,7 @@ def start_recording():
     if mload==False:
         rec = ask_user()
 
-    if rec:
+    if rec or mload:
         global recording, paused, audio_file_path, audio_buffer, button_frame, transcription_box
         recording = True
         paused = False
@@ -157,7 +157,7 @@ def start_recording():
             else: 
                 record_button.configure(state = "normal")
                  #  sticky="ew")   
-    if rec: 
+    if rec or mload: 
         threading.Thread(target=_record, daemon=True).start()
 
 # Function to stop recording
