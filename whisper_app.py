@@ -61,23 +61,29 @@ def transcribe_audio(file_path):
             messagebox.showerror("Error", f"An error occurred while transcribing: {e}\nBut yor can find the recorded audio at:{output_directory}")
         else:
             messagebox.showinfo("Info", f"Recording saved!\nYou can find the recorded audio at:{output_directory}\nYou may use the audio file to transcribe using 'Choose Audio File' Button.")
-            
+                
         record_button.configure(text="🎤 Record Audio", fg_color="lightblue")
 # Function to select an audio file and transcribe it
 tcry = False
 def select_audio_file():
-    global transcription_box, tcry
-    transcription_box.delete("1.0", "end")
-    file_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.aac *.mp3 *.wav *.m4a *.flac")])
-    if file_path:
-        choose_file_button.configure(text = "Transcribing...")
-        transcribe_audio(file_path)
-        choose_file_button.configure(text = "📂 Choose Audio File")
+    global mload
+    if mload:
+        global transcription_box, tcry
+        file_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.aac *.mp3 *.wav *.m4a *.flac")])
+        if file_path:
+            transcription_box.delete("1.0", "end")
+            saf = True
+            choose_file_button.configure(text = "Transcribing...")
+            #transcribe_audio(file_path)
+            threading.Thread(target=transcribe_audio , args=(file_path,), daemon=True).start()
+            choose_file_button.configure(text = "📂 Choose Audio File")
+    else:
+        messagebox.showerror("Error", f"Please select the model first.")
 
 mload = False
 
 def ask_user():
-    response = messagebox.askyesno("Confirmation", "No model selected. Do you want to record anyway?")
+    response = messagebox.askyesno("Confirmation", "No model selected. Do you want to record anyway? The audio will be saved")
     return response
 
 def load_model(model_path):
@@ -100,12 +106,16 @@ def select_model():
 
 # Function to start recording audio
 def start_recording():
-    global mload
+    global mload,change_directory_button, select_model_button, choose_file_button
     rec = False
     if mload==False:
         rec = ask_user()
 
     if rec or mload:
+        change_directory_button.configure(state = "disabled")
+        select_model_button.configure(state = "disabled")
+        choose_file_button.configure(state = "disabled")
+
         global recording, paused, audio_file_path, audio_buffer, button_frame, transcription_box
         recording = True
         paused = False
@@ -155,6 +165,7 @@ def start_recording():
         finally:
             button_frame.grid_forget()
             record_button.grid(row=record_button_no, column=0, pady=10,)
+
             if mload:
                 record_button.configure(text="Transcribing...", command=start_recording)
             else: 
@@ -167,6 +178,9 @@ def start_recording():
 def stop_recording():
     global recording
     recording = False
+    change_directory_button.configure(state = "normal")
+    select_model_button.configure(state = "normal")
+    choose_file_button.configure(state = "normal")
     sd.stop()
     if os.path.exists(audio_file_path):
         threading.Thread(target=transcribe_audio, args=(audio_file_path,), daemon=True).start()
@@ -219,9 +233,25 @@ def copy_text():
 def restore_copy_button():
     copy_button.configure(text="Copy text to clipboard", fg_color="#8d3560")
 
+
+
+
+# def on_hover(event):
+#     #change_directory_button.configure(text_color="white", fg_color = "#144870")  # Change text color to white
+#     event.widget.configure(text_color="white")  # Change text color to white
+
+# def on_leave(event):
+#     event.widget.configure(text_color="black")  # Restore original text color
+
+    #change_directory_button.configure(text_color="black", fg_color = "orange")
+
+
+# change_directory_button.bind("<Enter>", on_hover)  # Mouse enters
+# change_directory_button.bind("<Leave>", on_leave)  # Mouse leaves
+
 # CustomTkinter GUI
 ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
-ctk.set_default_color_theme("dark-blue")  # Themes: "blue" (default), "green", "dark-blue"
+ctk.set_default_color_theme("blue")  # Themes: "blue" (default), "green", "dark-blue"
 
 root = ctk.CTk()
 root.title("Wisper Transcriber")
@@ -229,6 +259,7 @@ root.geometry("600x520")
 root.grid_columnconfigure(0, weight=1)
 
 root.configure(fg_color="#4e1832")
+
 
 
 # Heading
@@ -240,15 +271,16 @@ save_directory_label = ctk.CTkLabel(root, text=f"Save Directory: {output_directo
 save_directory_label.grid(row=save_directory_label_no, column=0, pady=5,) #  sticky="ew")
 
 # Change save directory button
-change_directory_button = ctk.CTkButton(root, text="Change Save Directory", text_color="Black", command=change_save_directory, fg_color="orange", corner_radius=50)
+change_directory_button = ctk.CTkButton(root, text="Change Save Directory", text_color="Black", command=change_save_directory, fg_color="orange", corner_radius=50, hover_color="#ffe0b3")
 change_directory_button.grid(row=change_directory_button_no, column=0, pady=5,) #  sticky="ew") 
-
+# change_directory_button.bind("<Enter>", on_hover)  # Mouse enters
+# change_directory_button.bind("<Leave>", on_leave) 
 
 select_model_button = ctk.CTkButton(root, text="Select Model", text_color="white",command=select_model, fg_color="purple", corner_radius=50)
 select_model_button.grid(row=select_model_no, column=0, pady=5,) #  sticky="ew") 
 
 # Record button
-record_button = ctk.CTkButton(root, text="🎤 Record Audio", command=start_recording, text_color="Black", fg_color="lightblue", corner_radius=50, width=150, height=50)
+record_button = ctk.CTkButton(root, text="🎤 Record Audio", command=start_recording, text_color="Black", fg_color="lightblue", corner_radius=50, width=150, height=50, hover_color="#00ffff")
 record_button.grid(row=record_button_no, column=0, pady=10,) #  sticky="ew") 
 
 #button1.grid(row=0, column=0, padx=10, pady=20)
@@ -268,7 +300,7 @@ stop_button.grid(row=0, column=1, padx=10, pady=0)
 
 
 # Choose file button
-choose_file_button = ctk.CTkButton(root, text="📂 Choose Audio File", text_color="Black",command=select_audio_file, fg_color="lightgreen", corner_radius=50)
+choose_file_button = ctk.CTkButton(root, text="📂 Choose Audio File", text_color="Black",command=select_audio_file, fg_color="lightgreen", corner_radius=50, hover_color="#66ff33")
 choose_file_button.grid(row=choose_file_button_no, column=0, pady=5,) #  sticky="ew", corner_radius=50) 
 
 # Transcription box
@@ -282,6 +314,11 @@ copy_button.grid(row=copy_button_no, column=0, pady=5,) #  sticky="ew")
 # Footer
 footer_label = ctk.CTkLabel(root, text="Transcription will automatically be saved as a .txt file.", font=ctk.CTkFont(size=10, slant="italic"))
 footer_label.grid(row=footer_label_no, column=0, pady=5,) #  sticky="ew") 
+
+# for btn in [change_directory_button, choose_file_button]:
+#     btn.bind("<Enter>", on_hover)  # Bind hover effect
+#     btn.bind("<Leave>", on_leave)
+
 
 # Run the CustomTkinter event loop
 root.mainloop()
