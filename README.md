@@ -34,7 +34,7 @@ By default, this will download the model file **`medium.pt`** to:
 _(Note: This folder may be hidden. Enable "Show Hidden Files" in Windows Explorer to access it.)_  
 
 ### **Step 3: Run the Application**  
-Execute the GUI application by running:  
+Execute the GUI application by running(in the folder you have downloaded the .py file):  
 ```sh
 python whisper_app.py
 ```
