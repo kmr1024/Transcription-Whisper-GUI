@@ -17,7 +17,7 @@ A simple transcription GUI built with **Python** and **CustomTkinter**, integrat
 Ensure you have Python installed, then run the following command in the terminal or command prompt:  
 
 ```sh
-pip install os time openai-whisper customtkinter sounddevice wave pydub pyperclip
+pip install openai-whisper customtkinter sounddevice wave pydub pyperclip
 ```
 _(This will install only the missing dependencies.)_  
 
