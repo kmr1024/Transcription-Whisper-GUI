@@ -254,7 +254,7 @@ ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (default), "green", "dark-blue"
 
 root = ctk.CTk()
-root.title("Wisper Transcriber")
+root.title("Whisper Transcriber")
 root.geometry("600x520")
 root.grid_columnconfigure(0, weight=1)
 
