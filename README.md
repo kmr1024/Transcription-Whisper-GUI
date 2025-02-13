@@ -48,3 +48,7 @@ python whisper_app.py
 - All transcribed text is **automatically saved** for later use.  
 
 ✅ **That's it! Your transcription will be displayed in the app.**  
+
+## **Acknowledgements**
+- Thanks to ChatGPT-4o assisting me with the Python syntaxes
+- Thanks to Whisper - OpenAI's audio transcribing model
